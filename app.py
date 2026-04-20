@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
+    # Această variabilă stochează tot design-ul nou (HTML și CSS)
     html_modern = """
     <!DOCTYPE html>
     <html lang="ro">
@@ -13,7 +14,7 @@ def home():
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background-color: #1e1e2f;
+                background-color: #1e1e2f; /* Fundal bleumarin închis */
                 color: #ffffff;
                 display: flex;
                 justify-content: center;
@@ -22,7 +23,7 @@ def home():
                 margin: 0;
             }
             .card {
-                background-color: #2a2a40;
+                background-color: #2a2a40; /* Card de culoare gri-albăstrui */
                 padding: 50px;
                 border-radius: 15px;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -76,4 +77,5 @@ def home():
     return html_modern
 
 if __name__ == '__main__':
+    # Rulăm aplicația pe portul 5000, accesibilă din exteriorul containerului
     app.run(host='0.0.0.0', port=5000)
