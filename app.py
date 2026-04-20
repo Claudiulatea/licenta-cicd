@@ -64,7 +64,7 @@ def home():
             <p>Acest mediu de producție este actualizat în timp real, direct din repository-ul GitHub, folosind Docker și GitHub Actions.</p>
             
             <div class="status-box">
-                Status: Versiunea 3.0 Live! ✅
+                Status: Versiunea 3.1 Live! 🚀
             </div>
             
             <div class="footer">
