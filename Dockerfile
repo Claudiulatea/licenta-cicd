@@ -1,18 +1,27 @@
-# Pasul 1: Imaginea de baza
-FROM python:3.9-slim
+# Use a multi-stage build for better optimized images
+FROM python:3.9-slim AS base
 
-# Pasul 2: Folderul de lucru
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
-# Pasul 3: Instalare dependente
+# Install dependencies
+FROM base AS builder
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pasul 4: Copiere cod sursa
+# Prepare the final image
+FROM base
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY . .
 
-# Pasul 5: Portul expus
-EXPOSE 5000
+# Create a non-root user and switch to it
+RUN useradd -m myuser
+USER myuser
 
-# Pasul 6: Pornire aplicatie
-CMD ["python", "app.py"]
+# Health check configuration
+HEALTHCHECK CMD curl --fail http://localhost:8000/ || exit 1
+
+# Command to run Gunicorn server
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "myapp:app"]
