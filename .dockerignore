@@ -1,0 +1,14 @@
+# Exclude Node modules
+node_modules/
+
+# Exclude log files
+*.log
+
+# Exclude local build files
+build/
+
+# Exclude Dockerignore itself
+.dockerignore
+
+# Exclude environment variable files
+.env
