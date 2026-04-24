@@ -8,6 +8,7 @@ This project is a CI/CD implementation for [Project Name]. The main purpose of t
 - Node.js (version)
 - Git
 
+
 ### Installation
 1. Clone the repository:
    ```bash
