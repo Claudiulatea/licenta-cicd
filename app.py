@@ -82,7 +82,7 @@ def home():
     <body>
         <div class="container">
             <div class="rocket">🚀</div>
-            <h1>Flux CI/CD v6.0</h1>
+            <h1>Flux CI/CD v7.0 ACTIVAT</h1>
             <div class="status-badge">Sistem Online</div>
             <p>Aplicația a fost construită în GitHub Actions și deploy-ată prin Docker Hub.</p>
             <div class="footer">Proiect Licență &copy; 2026 - Automatizare Completă</div>
