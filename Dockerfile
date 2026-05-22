@@ -12,5 +12,5 @@ COPY . .
 # Expunem portul
 EXPOSE 8000
 
-# Pornim aplicația
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "myapp:app"]
+# Pornim aplicația folosind fișierul corect (app.py)
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
