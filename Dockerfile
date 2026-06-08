@@ -2,15 +2,17 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Instalăm dependențele direct în imaginea finală
+# Copiem fișierul de dependențe în container
 COPY requirements.txt .
+
+# Instalăm bibliotecile necesare
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiem restul codului
+# Copiem tot restul codului în container
 COPY . .
 
-# Expunem portul
+# Expunem portul pe care va asculta aplicația
 EXPOSE 8000
 
-# Pornim aplicația folosind fișierul corect (app.py)
+# Pornim aplicația folosind Gunicorn (încarcă instanța app din app.py)
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
