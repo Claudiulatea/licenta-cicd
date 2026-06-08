@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarcă codul pe serverul din cloud
+    # 1. Descarcă codul (Actualizat la v4 pentru Node 24)
     - name: Checkout cod
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    # 2. Pune Python pe serverul din cloud
+    # 2. Pune Python pe server (Actualizat la v5 pentru Node 24)
     - name: Configurare Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
 
@@ -29,7 +29,7 @@ jobs:
       run: |
         python gardian.py
 
-    # 4. Trimite înapoi în Git dacă DeepSeek a trebuit să repare vreo greșeală
+    # 4. Trimite înapoi în Git dacă DeepSeek a reparat ceva
     - name: Trimite modificările în Git (dacă există reparații)
       run: |
         git config --global user.name "Gardian AI [DeepSeek]"
@@ -42,16 +42,16 @@ jobs:
           git push
         fi
 
-    # 5. Se loghează pe contul tău de Docker Hub
+    # 5. Se loghează pe Docker Hub (Actualizat la v3)
     - name: Autentificare Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # 6. Construiește imaginea finală și o urcă pe Docker Hub
+    # 6. Construiește și urcă imaginea (Actualizat la v5)
     - name: Build și Push Imagine Docker
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: true
