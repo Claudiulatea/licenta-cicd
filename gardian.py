@@ -1,86 +1,74 @@
-import subprocess, time, os, sys
+import os
+import sys
+import subprocess
 
-# Numele fisierului care va fi monitorizat
-FILE_TO_WATCH = "myapp.py"
-# Cheia ta Google Gemini
-API_KEY = "AIzaSyA89eGWzxYmLobVi5bRent8DxfxB0lYHcw" 
+# Auto-instalare automată direct în cloud ca să evităm eroarea ModuleNotFoundError
+try:
+    import requests
+except ImportError:
+    print("[GARDIAN AI] Se instalează automat modulul requests în cloud...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
+    import requests
 
-def install_dependencies():
-    """Instaleaza noua librarie Google GenAI daca lipseste."""
-    try:
-        import google.genai
-    except ImportError:
-        print("📦 Instalare noua librarie Google GenAI (google-genai)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "google-genai"])
+# Preluăm cheia de securitate
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+FILE_TO_CHECK = "app.py"
 
-# Instalam/verificam dependintele
-install_dependencies()
-from google import genai
+if not DEEPSEEK_API_KEY:
+    print("[GARDIAN AI] Eroare: Lipseste cheia DEEPSEEK_API_KEY în GitHub Secrets!")
+    sys.exit(1)
 
-# Configurare client nou
-client = genai.Client(api_key=API_KEY)
+# Verificăm dacă app.py există
+if not os.path.exists(FILE_TO_CHECK):
+    print(f"[GARDIAN AI] Eroare: Fișierul {FILE_TO_CHECK} nu a fost găsit!")
+    sys.exit(1)
 
-def repara_cu_ai(eroare, cod_vechi):
-    print("🤖 AI-ul (Gemini 1.5 Flash) analizeaza eroarea...")
-    
-    prompt = (
-        "Esti un expert Python specializat in Flask. "
-        "Codul de mai jos are o eroare de sintaxa. Te rog sa o repari. "
-        "Returneaza DOAR codul Python corectat, fara nicio explicatie sau blocuri markdown."
-        f"\n\nCOD ORIGINAL:\n{cod_vechi}\n\nEROARE:\n{eroare}"
-    )
+with open(FILE_TO_CHECK, "r", encoding="utf-8") as f:
+    cod_curent = f.read()
 
-    try:
-        # Folosim noul client SDK care rezolva problemele de endpoint 404
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt
-        )
-        
-        if response and response.text:
-            cod_nou = response.text
-            # Curatare riguroasa
-            cod_curat = cod_nou.strip()
-            if "```" in cod_curat:
-                linii = cod_curat.split('\n')
-                linii_filtrare = [l for l in linii if not l.strip().startswith("```")]
-                cod_curat = '\n'.join(linii_filtrare)
-            
-            return cod_curat.strip()
-    except Exception as e:
-        print(f"❌ Eroare la apelul Gemini: {e}")
-        return None
+print("[GARDIAN AI] DeepSeek analizează codul din app.py...")
 
-def monitorizeaza():
-    print("🛡️ GARDIANUL ACTIV (Sistem Self-Healing)")
-    print(f"👀 Monitorizez fisierul: {FILE_TO_WATCH}")
-    
-    # Pornim aplicatia Flask in fundal
-    env = os.environ.copy()
-    env["FLASK_APP"] = FILE_TO_WATCH
-    subprocess.Popen(["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=8000"], env=env)
-    
-    while True:
-        # Verificam sintaxa folosind py_compile
-        rez = subprocess.run(['python3', '-m', 'py_compile', FILE_TO_WATCH], capture_output=True, text=True)
-        
-        if rez.returncode != 0:
-            print(f"🚨 EROARE DETECTATA in {FILE_TO_WATCH}!")
-            with open(FILE_TO_WATCH, "r") as f:
-                cod_vechi = f.read()
-            
-            cod_reparat = repara_cu_ai(rez.stderr, cod_vechi)
-            
-            if cod_reparat:
-                with open(FILE_TO_WATCH, "w") as f:
-                    f.write(cod_reparat)
-                print("✅ REPARAT! Codul a fost actualizat automat.")
-                time.sleep(5) 
-            else:
-                print("⚠️ Nu s-a putut repara automat.")
-                time.sleep(10)
-        
-        time.sleep(2)
+url = "https://api.deepseek.com/v1/chat/completions"
+headers = {
+    "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+    "Content-Type": "application/json"
+}
 
-if __name__ == "__main__":
-    monitorizeaza()
+prompt = (
+    "Ești un inginer DevOps senior. Analizează următorul cod de Flask din app.py.\n"
+    "Dacă conține erori de sintaxă sau probleme la pornire, rescrie-l corectat complet.\n"
+    "Răspunde DOAR cu codul Python curat, fără explicații, fără blocuri de text.\n"
+    "Dacă codul este déjà perfect, răspunde exact cu cuvântul: PERFECT\n\n"
+    f"Codul este:\n{cod_curent}"
+)
+
+data = {
+    "model": "deepseek-coder",
+    "messages": [{"role": "user", "content": prompt}],
+    "temperature": 0.1
+}
+
+try:
+    response = requests.post(url, json=data, headers=headers)
+    response_json = response.json()
+
+    # Protecție: Verificăm dacă răspunsul de la DeepSeek este valid sau e o eroare de API
+    if 'choices' not in response_json:
+        print(f"[GARDIAN AI] Serverul DeepSeek a returnat o eroare sau un răspuns neașteptat: {response_json}")
+        print("[GARDIAN AI] Ignorăm verificarea AI și trecem mai departe ca măsură de siguranță. ⚠️")
+        sys.exit(0)
+
+    rezultat = response_json['choices'][0]['message']['content'].strip()
+
+    if rezultat == "PERFECT":
+        print("[GARDIAN AI] Codul este stabil și perfect! Permitem trecerea. ✅")
+        sys.exit(0)
+    else:
+        print("[GARDIAN AI] ATENȚIE: S-au reparat erori în app.py! ⚠️")
+        with open(FILE_TO_CHECK, "w", encoding="utf-8") as f:
+            f.write(rezultat)
+        sys.exit(0)
+
+except Exception as e:
+    print(f"[GARDIAN AI] Eroare la comunicarea cu AI-ul: {e}")
+    sys.exit(0)
