@@ -1,4 +1,4 @@
-name: CI/CD Pipeline cu Gardian AI
+name: CI/CD Pipeline Standard
 
 on:
   push:
@@ -10,46 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descarcă codul (Actualizat la v4 pentru Node 24)
+    # 1. Descarcă codul pe serverul din cloud
     - name: Checkout cod
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
-    # 2. Pune Python pe server (Actualizat la v5 pentru Node 24)
-    - name: Configurare Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-
-    # 3. Rulează Gardianul AI (DeepSeek)
-    - name: Rulare Gardian AI (DeepSeek Validation & Self-Healing)
-      env:
-        DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      run: |
-        python gardian.py
-
-    # 4. Trimite înapoi în Git dacă DeepSeek a reparat ceva
-    - name: Trimite modificările în Git (dacă există reparații)
-      run: |
-        git config --global user.name "Gardian AI [DeepSeek]"
-        git config --global user.email "gardian-ai@cicd.local"
-        if git diff --quiet app.py; then
-          echo "Nu au fost necesare reparații."
-        else
-          git add app.py
-          git commit -m "[Self-Healing] Corecții automate aplicate de DeepSeek"
-          git push
-        fi
-
-    # 5. Se loghează pe Docker Hub (Actualizat la v3)
+    # 2. Se loghează pe contul tău de Docker Hub usando secretele configurate
     - name: Autentificare Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # 6. Construiește și urcă imaginea (Actualizat la v5)
+    # 3. Construiește imaginea Docker și o urcă direct pe Docker Hub
     - name: Build și Push Imagine Docker
       uses: docker/build-push-action@v5
       with:
