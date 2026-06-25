@@ -25,7 +25,7 @@ def index():
                         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
                         margin-top: 50px;">
                 
-                <h1 style="color: #4a148c; margin-bottom: 10px;">🔥 Salut Claudiu Latea!</h1>
+                <h1 style="color: #4a148c; margin-bottom: 10px;">🔥 Salut Claudiu Lateaa!</h1>
                 <h3 style="color: #667eea; margin-top: 0;">Live Edit funcționează perfect!</h3>
                 <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
                 
