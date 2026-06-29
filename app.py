@@ -25,7 +25,7 @@ def index():
                 background-color: var(--dark-bg);
                 /* Fundal cu pattern de grid subtil */
                 background-image: 
-                    radial-gradient(circle at center, #151515 0%, #000 100%),
+                    radial-gradient(circle at center, #50ffc099 0%, #000 100%),
                     linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
                 background-size: 100% 100%, 30px 30px, 30px 30px;
@@ -38,7 +38,7 @@ def index():
                 overflow: hidden;
             }
             .container {
-                background: var(--panel-bg);
+                background: rgb(56 56 56 / 85%);
                 border: 1px solid rgba(0, 255, 65, 0.3);
                 box-shadow: 0 0 25px rgba(0, 255, 65, 0.1), inset 0 0 15px rgba(0, 255, 65, 0.05);
                 border-radius: 5px;
@@ -70,7 +70,7 @@ def index():
                 padding-bottom: 15px;
             }
             h3 {
-                color: #888;
+                color: #ffffff;
                 font-weight: normal;
                 font-size: 1em;
                 margin-bottom: 30px;
@@ -89,7 +89,7 @@ def index():
                 background: rgba(0, 255, 65, 0.08);
             }
             .label {
-                color: #666;
+                color: #fff;
                 font-weight: bold;
             }
             .value {
