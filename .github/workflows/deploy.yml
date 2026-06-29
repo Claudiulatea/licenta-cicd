@@ -1,4 +1,4 @@
-name: CI/CD Pipeline cu Gardian AI
+name: CI/CD Pipeline Standard
 
 on:
   push:
@@ -12,47 +12,30 @@ jobs:
     steps:
     # 1. Descarcă codul pe serverul din cloud
     - name: Checkout cod
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      uses: actions/checkout@v4
 
-    # 2. Pune Python pe serverul din cloud
-    - name: Configurare Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    # 3. Rulează Gardianul AI (DeepSeek)
-    - name: Rulare Gardian AI (DeepSeek Validation & Self-Healing)
-      env:
-        DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+    # Verificare secrete Docker Hub (fail-fast cu mesaj clar)
+    - name: Verificare secrete Docker Hub
       run: |
-        python gardian.py
-
-    # 4. Trimite înapoi în Git dacă DeepSeek a trebuit să repare vreo greșeală
-    - name: Trimite modificările în Git (dacă există reparații)
-      run: |
-        git config --global user.name "Gardian AI [DeepSeek]"
-        git config --global user.email "gardian-ai@cicd.local"
-        if git diff --quiet app.py; then
-          echo "Nu au fost necesare reparații."
+        if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+          echo "Error: DOCKERHUB_USERNAME or DOCKERHUB_TOKEN is not set" >&2
+          exit 1
         else
-          git add app.py
-          git commit -m "[Self-Healing] Corecții automate aplicate de DeepSeek"
-          git push
+          echo "Docker Hub secrets present"
         fi
 
-    # 5. Se loghează pe contul tău de Docker Hub
+    # 2. Se loghează pe contul tău de Docker Hub usando secretele configurate
     - name: Autentificare Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
+        registry: docker.io
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # 6. Construiește imaginea finală și o urcă pe Docker Hub
+    # 3. Construiește imaginea Docker și o urcă direct pe Docker Hub
     - name: Build și Push Imagine Docker
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: claudiulatea2/licenta-app:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/licenta-app:latest

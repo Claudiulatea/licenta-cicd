@@ -47,3 +47,4 @@ def index():
 if __name__ == '__main__':
     # Rulam pe portul 8000, exact cum mapează Vagrant!
     app.run(host='0.0.0.0', port=8000)
+    # Test rulare cu Gardianul AI activat
