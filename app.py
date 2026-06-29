@@ -24,7 +24,7 @@ def index():
                         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
                         margin-top: 50px;">
                 
-                <h1 style="color: #2c3e50; margin-bottom: 10px;">🚀 Testare Automată Reușită!</h1>
+                <h1 style="color: #2c3e50; margin-bottom: 10px;">🚀 Testare Automatăaaaaa Reușită!</h1>
                 <h3 style="color: #27ae60; margin-top: 0;">Salut Claudiuuu! Pipeline-ul CI/CD funcționează perfect.</h3>
                 <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
                 
