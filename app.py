@@ -136,7 +136,7 @@ def index():
     <body>
         <div class="container">
             <h1>Uplink Stabilizat 🔒</h1>
-            <h3>Salut Claudiu! Pipeline-ul CI/CD a fost executat cu succes. Acces autorizat.</h3>
+            <h3>Salut Miezu! Pipeline-ul CI/CD a fost executat cu succes. Acces autorizat.</h3>
             
             <div class="data-row">
                 <span class="label">SYS_STATUS:</span>
